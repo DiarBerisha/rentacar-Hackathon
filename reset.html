@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reset Password</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="forgot-container">
+    <h2>Reset Password</h2>
+    <form onsubmit="handleReset(event)">
+      <label for="new-password">New Password:</label>
+      <input type="password" id="new-password" required />
+      <button type="submit">Reset Password</button>
+    </form>
+    <p id="reset-message"></p>
+  </div>
+
+  <script>
+    function handleReset(event) {
+      event.preventDefault();
+      const msg = document.getElementById('reset-message');
+      msg.textContent = "Password has been reset (simulated).";
+      msg.style.color = 'green';
+    }
+  </script>
+</body>
+</html>
