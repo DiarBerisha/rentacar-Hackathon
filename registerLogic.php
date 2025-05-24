@@ -23,7 +23,7 @@ if (isset($_POST['submit'])) {
         echo "Plotësoni të gjitha fushat!";
     }else{
         $sql = "INSERT INTO users(email, emri, mbiemri, ditlindja, patentshoferi, numritelefonit, kodipostar, qyteti, shteti, adresa, title, password, confirm_password, is_admin) 
-        VALUES(:email, :emri, :mbiemri,: ditlindja, :patentshoferi, :numritelefonit, :kodipostar,:qyteti,:shteti,:adresa,:title,:password,:confirm_password,:is_admin)";
+        VALUES(:email, :emri, :mbiemri,: ditlindja, :patentshoferi, :numritelefonit, :kodipostar, :qyteti, :shteti, :adresa, :title, :password, :confirm_password, :is_admin)";
         $insertSql = $conn->prepare($sql);
 
         $is_admin = 0;
@@ -52,4 +52,53 @@ if (isset($_POST['submit'])) {
 }
 
 
+?><?php
+$today = date('Y-m-d');
+$seventyYearsAgo = date('Y-m-d', strtotime('-70 years'));
+$selected = $_GET['birthday'] ?? null;
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Birthday Picker</title>
+  <style>
+    /* Hide the placeholder text on supported browsers */
+    input[type="date"]::placeholder {
+      color: transparent;
+    }
+
+    /* Optional: Minimal styling */
+    input[type="date"] {
+      font-size: 16px;
+      padding: 5px;
+    }
+  </style>
+  <script>
+    function submitOnSelect(input) {
+      if (input.value) {
+        window.location.href = "?birthday=" + input.value;
+      }
+    }
+  </script>
+</head>
+<body>
+  <h2>Select Your Birthday</h2>
+
+  <input
+    type="date"
+    id="birthday"
+    name="birthday"
+    min="<?= $seventyYearsAgo ?>"
+    max="<?= $today ?>"
+    onclick="this.showPicker()"
+    onchange="submitOnSelect(this)"
+    required
+  >
+
+  <?php if ($selected): ?>
+    <p>You selected: <strong><?= htmlspecialchars($selected) ?></strong></p>
+  <?php endif; ?>
+</body>
+</html>
