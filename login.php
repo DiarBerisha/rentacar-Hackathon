@@ -1,17 +1,17 @@
-<?php include_once "config.php"; 
-include_once "header.php";?>
+<?php include_once "config.php";
+include_once "header.php"; ?>
 
 <body>
-    <form action="loginLogic.php" class="login" method="POST">
-        <h2>Kyçu</h2>
-        <p>Nese nuk kini nje llogari ne <a href="index.php">Rent A Car Diari</a> <a href="register.php" class="reg">regjistrohuni </a>tani!</p>
-        <input type="email" class="email-l" placeholder="Email" >
-        <input type="password" class="password-l" placeholder="Fjalkalimi" >
-        <p><a href="forgot-password.html">Kam harruar fjalkalimin!</a></p>
-        <button class="button-l">Kyçu</button>
-    </form>
+  <form action="loginLogic.php" class="login" method="POST">
+    <h2>Kyçu</h2>
+    <p>Nese nuk kini nje llogari ne <a href="index.php">Rent A Car Diari</a> <a href="register.php" class="reg">regjistrohuni </a>tani!</p>
+    <input type="email" name="email" class="email-l" placeholder="Email" required>
+    <input type="password" name="password" class="password-l" placeholder="Fjalkalimi" required>
+    <p><a href="forgot-password.html">Kam harruar fjalkalimin!</a></p>
+    <button type="submit" class="button-l">Kyçu</button>
+  </form>
 </body>
-<?php include_once "config.php"; 
+<?php include_once "config.php";
 include_once "header.php"; ?>
 
 <style>
@@ -120,5 +120,3 @@ include_once "header.php"; ?>
     }
   }
 </style>
-
-

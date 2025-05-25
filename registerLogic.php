@@ -1,104 +1,84 @@
-<?php include_once "config.php"; 
+<?php
+include_once "config.php";
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  // Get form inputs
+  $email = $_POST['email'];
+  $emri = $_POST['emri'];
+  $mbiemri = $_POST['mbiemri'];
+  $ditlindja = $_POST['birthday'];
+  $patentshoferi = $_POST['patentshoferi'];
+  $numritelefonit = $_POST['numri-telefonit'];
+  $kodipostar = $_POST['kodi-postar'];
+  $qyteti = $_POST['qyteti'];
+  $shteti = $_POST['shteti'];
+  $adresa = $_POST['adresa'];
+  $title = $_POST['title'];
+  $tempPass = $_POST['password'];
+  $tempConfirm = $_POST['confirm_password'];
 
-if (isset($_POST['submit'])) {
-    $email = $_POST['email'];
-    $emri = $_POST['emri'];
-    $mbiemri = $_POST['mbiemri'];
-    $ditlindja = $_POST['ditlindja'];
-    $patentshoferi = $_POST['patentshoferi'];
-    $numritelefonit = $_POST['numri-telefonit'];
-    $kodipostar = $_POST['kodi-postar'];
-    $qyteti = $_POST['qyteti'];
-    $shteti = $_POST['shteti'];
-    $adresa = $_POST['adresa'];
-    $title = $_POST['title'];
-    $tempPass = $_POST['password'];
-    $password = password_hash($tempPass, PASSWORD_DEFAULT);
-    $tempConfirm = $_POST['confirm_password'];
-    $confirm_password = password_hash($tempPass, PASSWORD_DEFAULT);
+  // Check for empty fields
+  if (
+    empty($email) || empty($tempPass) || empty($tempConfirm) || empty($emri) ||
+    empty($mbiemri) || empty($ditlindja) || empty($patentshoferi) || empty($numritelefonit) ||
+    empty($kodipostar) || empty($qyteti) || empty($shteti) || empty($adresa) || empty($title)
+  ) {
+    echo "Ju lutemi plotësoni të gjitha fushat!";
+    exit;
+  }
 
-    if (empty($email) || empty($tempPass)|| empty($confirm_password)||empty($emri) ||empty($mbiemri) ||empty($ditlindja) ||empty($patentshoferi) ||empty($numritelefonit) ||
-    empty($kodipostar) ||empty($qyteti) ||empty($shteti) ||empty($adresa) ||empty($title)){
-        echo "Plotësoni të gjitha fushat!";
-    }else{
-        $sql = "INSERT INTO users(email, emri, mbiemri, ditlindja, patentshoferi, numritelefonit, kodipostar, qyteti, shteti, adresa, title, password, confirm_password, is_admin) 
-        VALUES(:email, :emri, :mbiemri,: ditlindja, :patentshoferi, :numritelefonit, :kodipostar, :qyteti, :shteti, :adresa, :title, :password, :confirm_password, :is_admin)";
-        $insertSql = $conn->prepare($sql);
+  // Check if passwords match
+  if ($tempPass !== $tempConfirm) {
+    echo "Fjalëkalimet nuk përputhen!";
+    exit;
+  }
 
-        $is_admin = 0;
-        $insertSql->bindParam(":email", $email);
-        $insertSql->bindParam(":emri", $emri);
-        $insertSql->bindParam(":mbiemri", $mbiemri);
-        $insertSql->bindParam(":ditlindja", $ditlindja);
-        $insertSql->bindParam(":patentshoferi", $patentshoferi);
-        $insertSql->bindParam(":numritelefonit", $numritelefonit);
-        $insertSql->bindParam(":kodipostar", $kodipostar);
-        $insertSql->bindParam(":qyteti", $qyteti);
-        $insertSql->bindParam(":shteti", $shteti);
-        $insertSql->bindParam(":adresa", $adresa);
-        $insertSql->bindParam(":title", $title);
-        $insertSql->bindParam(":confirm_password", $confirm_password);
-        $insertSql->bindParam(":is_admin", $is_admin);
+  // Hash password
+  $password = password_hash($tempPass, PASSWORD_DEFAULT);
+  $is_admin = 0;
 
-        $insertSql->execute();
-        header("Location: login.php");
-    }
+  // Check if email already exists
+  $checkSql = "SELECT id FROM users WHERE email = :email";
+  $checkStmt = $conn->prepare($checkSql);
+  $checkStmt->bindParam(':email', $email);
+  $checkStmt->execute();
 
+  if ($checkStmt->rowCount() > 0) {
+    echo "Ky email është përdorur tashmë!";
+    exit;
+  }
 
+  // Insert new user
+  $sql = "INSERT INTO users (
+                email, emri, mbiemri, ditlindja, patentshoferi, numritelefonit,
+                kodipostar, qyteti, shteti, adresa, title, password, is_admin
+            ) VALUES (
+                :email, :emri, :mbiemri, :ditlindja, :patentshoferi, :numritelefonit,
+                :kodipostar, :qyteti, :shteti, :adresa, :title, :password, :is_admin
+            )";
 
+  $stmt = $conn->prepare($sql);
+  $stmt->bindParam(':email', $email);
+  $stmt->bindParam(':emri', $emri);
+  $stmt->bindParam(':mbiemri', $mbiemri);
+  $stmt->bindParam(':ditlindja', $ditlindja);
+  $stmt->bindParam(':patentshoferi', $patentshoferi);
+  $stmt->bindParam(':numritelefonit', $numritelefonit);
+  $stmt->bindParam(':kodipostar', $kodipostar);
+  $stmt->bindParam(':qyteti', $qyteti);
+  $stmt->bindParam(':shteti', $shteti);
+  $stmt->bindParam(':adresa', $adresa);
+  $stmt->bindParam(':title', $title);
+  $stmt->bindParam(':password', $password);
+  $stmt->bindParam(':is_admin', $is_admin, PDO::PARAM_INT);
 
+  if ($stmt->execute()) {
+    session_start();
+    $_SESSION['user_email'] = $email;  // You can store more user info if needed
 
+    header("Location: user_dashboard.php");
+    exit;
+  } else {
+    echo "Dështoi regjistrimi. Ju lutemi provoni përsëri.";
+  }
 }
-
-
-?><?php
-$today = date('Y-m-d');
-$seventyYearsAgo = date('Y-m-d', strtotime('-70 years'));
-$selected = $_GET['birthday'] ?? null;
-?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Birthday Picker</title>
-  <style>
-    /* Hide the placeholder text on supported browsers */
-    input[type="date"]::placeholder {
-      color: transparent;
-    }
-
-    /* Optional: Minimal styling */
-    input[type="date"] {
-      font-size: 16px;
-      padding: 5px;
-    }
-  </style>
-  <script>
-    function submitOnSelect(input) {
-      if (input.value) {
-        window.location.href = "?birthday=" + input.value;
-      }
-    }
-  </script>
-</head>
-<body>
-  <h2>Select Your Birthday</h2>
-
-  <input
-    type="date"
-    id="birthday"
-    name="birthday"
-    min="<?= $seventyYearsAgo ?>"
-    max="<?= $today ?>"
-    onclick="this.showPicker()"
-    onchange="submitOnSelect(this)"
-    required
-  >
-
-  <?php if ($selected): ?>
-    <p>You selected: <strong><?= htmlspecialchars($selected) ?></strong></p>
-  <?php endif; ?>
-</body>
-</html>

@@ -1,48 +1,49 @@
 <?php
-
 session_start();
+include_once "config.php";
 
-include_once 'config.php';
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    die("Metoda e kërkesës nuk është e vlefshme.");
+}
 
-if (isset($_POST['submit'])) {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+$email = trim($_POST['email'] ?? '');
+$password = $_POST['password'] ?? '';
 
-    if (empty($email) || empty($password)) {
-        echo "Please fill all the fields";
-    } else {
-        $sql = "SELECT id, email, emri, mbiemri, ditlindja, patentshoferi, numritelefonit, kodipostar, qyteti, shteti, adresa, title, password, confirm_password, is_admin
-         FROM users WHERE email= :email";
-        $selectUser = $conn->prepare($sql);
-        $selectUser->bindParam(":email", $email);
+// Validate inputs
+if (empty($email) || empty($password)) {
+    die("Ju lutem plotësoni emailin dhe fjalëkalimin.");
+}
 
-        $selectUser->execute();
+try {
+    // Fetch user by email
+    $stmt = $conn->prepare("SELECT id, email, password FROM users WHERE email = :email");
+    $stmt->bindParam(':email', $email);
+    $stmt->execute();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $data = $selectUser->fetch();
-        if ($data == false) {
-            echo "The user does not exist";
-        } else {
-            if (password_verify($password, $data["password"])) {
-                session_start();
-                $_SESSION['mbiemri'] = $data['mbiemri'];
-                $_SESSION['ditlindja'] = $data['ditlindja'];
-                $_SESSION['numritelefonit'] = $data['numritelefonit'];
-                $_SESSION['patentshoferi'] = $data['patentshoferi'];
-                $_SESSION['ikodipostard'] = $data['kodipostar'];
-                $_SESSION['qyteti'] = $data['qyteti'];
-                $_SESSION['shteti'] = $data['shteti'];
-                $_SESSION['adresa'] = $data['adresa'];
-                $_SESSION['title'] = $data['title'];
-                $_SESSION['password'] = $data['password'];
-                $_SESSION['confirm_password'] = $data['confirm_password'];
-                $_SESSION['emri'] = $data['emri'];
-                $_SESSION['email'] = $data['email'];
-                $_SESSION['is_admin'] = $data['is_admin'];
-
-                header("Location: index.php");
-            } else {
-                echo 'Password is not valid';
-            }
-        }
+    // Verify user exists and password is correct
+    if (!$user || !password_verify($password, $user['password'])) {
+        die("Email ose fjalëkalimi i gabuar.");
     }
+
+    // Regenerate session ID for security
+    session_regenerate_id(true);
+
+    // Set session variables
+    $_SESSION['user_id'] = $user['id'];
+    $_SESSION['email'] = $user['email'];
+
+    // Check if user is admin (replace with DB field if possible)
+    $adminEmails = ['admin@yourdomain.com', 'boss@yourdomain.com'];
+    if (in_array(strtolower($user['email']), $adminEmails)) {
+        $_SESSION['admin_logged_in'] = true;
+        header("Location: admin_bookings.php");
+        exit;
+    } else {
+        $_SESSION['admin_logged_in'] = false;
+        header("Location: user_dashboard.php");
+        exit;
+    }
+} catch (PDOException $e) {
+    die("Gabim në hyrje: " . $e->getMessage());
 }

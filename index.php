@@ -380,7 +380,7 @@ include_once "header.php"; ?>
           <option value="luxury">Luxury</option>
         </select>
       </div>
-      <button type="submit" aria-label="Search Cars">Kerko</button>
+      <a href="list_cars.php"><button type="button" aria-label="Search Cars">Kerko</button></a>
     </form>
   </section>
 
