@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,52 +8,57 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <style>
-    body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-}
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
 
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #333;
-  padding: 14px 20px;
-}
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: black;
+    padding: 14px 20px;
+  }
 
-.logo {
-  color: #fff;
-  font-size: 20px;
-  font-weight: bold;
-}
+  .logo {
 
-.nav-links {
-  list-style: none;
-  display: flex;
-  margin: 0;
-  padding: 0;
-}
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+  }
 
-.nav-links li {
-  margin-left: 20px;
-}
+  .logoimg {
+    height: 75px;
+  }
 
-.nav-links a {
-  color: #fff;
-  text-decoration: none;
-  padding: 8px;
-  transition: background 0.3s;
-}
+  .nav-links {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+  }
 
-.nav-links a:hover {
-  background-color: #575757;
-  border-radius: 4px;
-}
+  .nav-links li {
+    margin-left: 20px;
+  }
 
+  .nav-links a {
+    color: #fff;
+    text-decoration: none;
+    padding: 8px;
+    transition: background 0.3s;
+  }
+
+  .nav-links a:hover {
+    background-color: #575757;
+    border-radius: 4px;
+  }
 </style>
+
 <body>
   <nav class="navbar">
-    <div class="logo">Rent A Car Diari</div>
+    <div class="logo"><img src="RentLogo.PNG" class="logoimg"></div>
     <ul class="nav-links">
       <li><a href="#">Home</a></li>
       <li><a href="#">About</a></li>
@@ -61,4 +67,5 @@
     </ul>
   </nav>
 </body>
+
 </html>

@@ -1,12 +1,15 @@
-<?php include_once "config.php" ?>
-<?php include_once "config.php"; 
+<?php include_once "config.php";
+
 include_once "header.php"; ?>
 
 <style>
   /* Basic Reset */
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
   }
+
   body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -24,8 +27,8 @@ include_once "header.php"; ?>
 
   /* Hero Section */
   .hero {
-    background: url('https://rentacar-prishtina.com/en/assets/img/banner-01.jpg') center/cover no-repeat;
-    height: 75vh;
+
+    height: 95vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -35,30 +38,74 @@ include_once "header.php"; ?>
     padding: 0 20px;
     position: relative;
   }
+
   .hero::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0, 0, 0, 0.4);
     z-index: 0;
   }
+
   .hero-content {
     position: relative;
     z-index: 1;
     max-width: 600px;
   }
+
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hero-content {
+    opacity: 0;
+    transform: translateY(40px);
+    animation: fadeInUp 1s ease-out forwards;
+    animation-delay: 0.3s;
+  }
+
+  .hero-content>* {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+
+  .hero-content h1 {
+    animation-delay: 0.3s;
+  }
+
+  .hero-content p {
+    animation-delay: 0.6s;
+  }
+
+  .hero-content .btn-primary {
+    animation-delay: 0.9s;
+  }
+
+
+
   .hero-content h1 {
     font-size: 3rem;
     font-weight: 700;
     margin-bottom: 15px;
     line-height: 1.1;
-    text-shadow: 0 2px 6px rgba(0,0,0,0.7);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
   }
+
   .hero-content p {
     font-size: 1.2rem;
     margin-bottom: 30px;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
   }
+
   .hero-content .btn-primary {
     background-color: #f7941d;
     color: white;
@@ -71,6 +118,7 @@ include_once "header.php"; ?>
     border: none;
     cursor: pointer;
   }
+
   .hero-content .btn-primary:hover {
     background-color: #e88312;
   }
@@ -88,6 +136,7 @@ include_once "header.php"; ?>
     gap: 15px;
     align-items: center;
     justify-content: center;
+    margin-top: 60px;
   }
 
   .search-section label {
@@ -107,6 +156,7 @@ include_once "header.php"; ?>
     min-width: 140px;
     transition: border-color 0.3s ease;
   }
+
   .search-section select:focus,
   .search-section input[type="date"]:focus {
     border-color: #f7941d;
@@ -132,6 +182,7 @@ include_once "header.php"; ?>
     min-width: 160px;
     margin-top: 24px;
   }
+
   .search-section button:hover {
     background-color: #e88312;
   }
@@ -146,6 +197,7 @@ include_once "header.php"; ?>
     flex-wrap: wrap;
     justify-content: center;
   }
+
   .card {
     background: white;
     border-radius: 12px;
@@ -155,15 +207,35 @@ include_once "header.php"; ?>
     text-align: center;
     transition: box-shadow 0.3s ease;
   }
+
+  .card {
+    opacity: 0;
+    transform: translateX(80px);
+    /* default */
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .card[data-direction="left"] {
+    transform: translateX(-80px);
+  }
+
+  .card.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+
   .card:hover {
     box-shadow: 0 12px 40px rgb(247 148 29 / 0.3);
   }
+
   .card h3 {
     color: #f7941d;
     font-weight: 700;
     margin-bottom: 15px;
     font-size: 22px;
   }
+
   .card p {
     color: #555;
     font-size: 15px;
@@ -179,22 +251,90 @@ include_once "header.php"; ?>
     font-size: 14px;
   }
 
+  .hero {
+    background: url(https://images.hgmsites.net/hug/2020-bmw-x5-series_100728662_h.jpg) center center / cover no-repeat;
+
+  }
+
+
   /* Responsive */
   @media (max-width: 768px) {
     .hero-content h1 {
       font-size: 2.2rem;
     }
+
     .search-section {
       flex-direction: column;
       margin: -50px auto 40px;
     }
+
     .search-section button {
       margin-top: 15px;
       width: 100%;
     }
+
     .info-cards {
       gap: 18px;
     }
+
+
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+
+  }
+
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    padding: 60px 20px;
+    background-color: #fff;
+  }
+
+  .feature-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    padding: 30px 20px;
+    text-align: center;
+    flex: 1 1 260px;
+    max-width: 300px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(247, 148, 29, 0.2);
+  }
+
+  .feature-card img {
+    height: 60px;
+    margin-bottom: 20px;
+    filter: grayscale(20%);
+  }
+
+  .feature-card h3 {
+    color: #f7941d;
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .feature-card p {
+    color: #555;
+    font-size: 14px;
+    line-height: 1.5;
   }
 </style>
 
@@ -254,4 +394,45 @@ include_once "header.php"; ?>
       <h3>Affordable Prices</h3>
       <p>Competitive pricing and transparent fees ensure you get the best deal every time.</p>
     </article>
-    <article class="
+  </section>
+  </section> <!-- closes .info-cards -->
+
+  <!-- Feature Cards Section -->
+  <section class="features" aria-label="Our guarantees and services">
+    <div class="feature-card">
+      <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" alt="Best Price Icon" />
+      <h3>Best Price Guarantee</h3>
+      <p>We guarantee the lowest prices on all vehicles with no hidden fees.</p>
+    </div>
+    <div class="feature-card">
+      <img src="https://cdn-icons-png.flaticon.com/512/597/597177.png" alt="24/7 Support Icon" />
+      <h3>24/7 Support</h3>
+      <p>Our team is available day and night to assist you anytime.</p>
+    </div>
+    <div class="feature-card">
+      <img src="https://cdn-icons-png.flaticon.com/512/1034/1034124.png" alt="Full Insurance Icon" />
+      <h3>Full Insurance</h3>
+      <p>All our rentals include full insurance to keep you protected.</p>
+    </div>
+  </section>
+
+  <?php include_once "footer.php"; ?>
+</body>
+<script>
+  const cards = document.querySelectorAll('.card');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target); // Optional: stop observing once visible
+      }
+    });
+  }, {
+    threshold: 0.2
+  });
+
+  cards.forEach(card => {
+    observer.observe(card);
+  });
+</script>
