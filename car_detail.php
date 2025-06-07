@@ -1,5 +1,6 @@
 <?php
 include_once "config.php";
+include_once "header.php";
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     die("Invalid car ID.");
@@ -28,7 +29,7 @@ try {
     <meta charset="UTF-8" />
     <title>Book <?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></title>
     <style>
-        body {
+        .main {
             font-family: Arial, sans-serif;
             background: #111;
             color: white;
@@ -91,7 +92,7 @@ try {
 </head>
 
 <body>
-
+        <section class="main">
     <img class="car-image" src="<?= htmlspecialchars($car['image_url']) ?>" alt="<?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?>">
 
     <h1>Book <?= htmlspecialchars($car['brand']) . ' ' . htmlspecialchars($car['model']) ?> (<?= (int)$car['year'] ?>)</h1>
@@ -125,7 +126,7 @@ try {
 
         <button type="submit">Book Now</button>
     </form>
-
+</section>
 </body>
 
 </html>

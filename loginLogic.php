@@ -41,7 +41,7 @@ try {
         exit;
     } else {
         $_SESSION['admin_logged_in'] = false;
-        header("Location: user_dashboard.php");
+        header("Location: index.php");
         exit;
     }
 } catch (PDOException $e) {

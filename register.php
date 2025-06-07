@@ -7,7 +7,6 @@ $seventyYearsAgo = date('Y-m-d', strtotime('-70 years'));
 ?>
 
 <style>
-    /* Your CSS styles here (same as your original style block) */
     body {
         background-image: url('https://www.mbusa.com/content/dam/mb-nafta/us/myco/my25/gls-class/gls-suv/gallery/series/gallery-class/2025-GLS-SUV-GAL-002-K-FE-DR.jpg');
         background-size: cover;
@@ -20,9 +19,8 @@ $seventyYearsAgo = date('Y-m-d', strtotime('-70 years'));
         font-family: Arial, sans-serif;
     }
 
-    /* ... rest of your CSS here ... */
 
-    .registration-form {
+    .registration-form{
         max-width: 900px;
         margin: 40px auto;
         padding: 30px;
@@ -31,8 +29,23 @@ $seventyYearsAgo = date('Y-m-d', strtotime('-70 years'));
         border-radius: 10px;
         font-family: Arial, sans-serif;
     }
+    .registration-form input, .regbtn{
+        max-width: 900px;
+        padding: 10px 12px;
+    font-size: 16px;
+    border: 1.5px solid #ccc;
+    border-radius: 6px;
+    min-width: 140px;
+    transition: border-color 0.3s ease;
+    }
+.regbtn{
+    margin-top: 10px;
+background-color: white;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: gray;
+    font-size: 19px;
+}
 
-    /* Continue with your CSS as you had it */
 </style>
 
 <form class="registration-form" method="POST" action="registerLogic.php">
@@ -44,15 +57,7 @@ $seventyYearsAgo = date('Y-m-d', strtotime('-70 years'));
     <div class="form-section">
         <div class="form-column">
             <h2>Te dhënat e shoferit</h2>
-            <select name="title" required>
-                <option value="" hidden>Titulli</option>
-                <option value="mr">Mr.</option>
-                <option value="ms">Ms.</option>
-                <option value="mrs">Mrs.</option>
-                <option value="miss">Miss.</option>
-                <option value="dr">Dr.</option>
-                <option value="prof">Prof.</option>
-            </select>
+            
             <input type="text" name="emri" placeholder="Emri*" required>
             <input type="text" name="mbiemri" placeholder="Mbiemri*" required>
             <input class="data" type="date" name="birthday" min="<?= $seventyYearsAgo ?>" max="<?= $today ?>" required>
@@ -63,13 +68,13 @@ $seventyYearsAgo = date('Y-m-d', strtotime('-70 years'));
             <h2>Te dhënat kontaktuese</h2>
             <input type="text" name="numri-telefonit" placeholder="+383 4X XXX XXX*" required>
             <input type="text" name="adresa" placeholder="Adresa*" required>
-            <input type="text" name="kodi-postar" placeholder="Kodi Postar*" required>
+            
             <input type="text" name="qyteti" placeholder="Qyteti*" required>
             <input type="text" name="shteti" placeholder="Shteti*" required>
         </div>
     </div>
 
-    <button type="submit">Regjistrohu</button>
+    <button type="submit" class="regbtn">Regjistrohu</button>
 </form>
 
 <?php include_once "footer.php"; ?>

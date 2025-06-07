@@ -2,6 +2,7 @@
 session_start();
 include_once "config.php";
 
+// Redirect to login if user not logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
@@ -9,23 +10,21 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Prepare query with correct car column names
+// Query bookings related to the current user
 $stmt = $conn->prepare("
     SELECT b.id, b.pickup_date, b.return_date, c.brand, c.model, c.year
     FROM bookings b
     JOIN cars c ON b.car_id = c.id
-    WHERE b.user_id = :user_id
+    WHERE b.customer_id = :user_id
     ORDER BY b.pickup_date DESC
 ");
 $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
 $stmt->execute();
-
 $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <title>User Dashboard - My Bookings</title>
@@ -53,8 +52,7 @@ $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
-        th,
-        td {
+        th, td {
             padding: 12px 15px;
             border: 1px solid #444;
             text-align: left;
@@ -75,7 +73,6 @@ $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     </style>
 </head>
-
 <body>
     <h1>My Bookings</h1>
 
@@ -104,7 +101,6 @@ $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <p>You have no bookings yet.</p>
     <?php endif; ?>
 </body>
-
 </html>
 
 <?php $conn = null; ?>

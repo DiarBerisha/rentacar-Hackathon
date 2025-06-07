@@ -331,6 +331,10 @@ include_once "header.php"; ?>
     margin-bottom: 10px;
   }
 
+.l{
+  height: 37px;
+}
+
   .feature-card p {
     color: #555;
     font-size: 14px;
@@ -344,7 +348,7 @@ include_once "header.php"; ?>
   <!-- Hero Section -->
   <section class="hero" role="banner" aria-label="Welcome section with rent a car message">
     <div class="hero-content">
-      <h1>Rent Your Perfect Car in Prishtina</h1>
+      <h1>Rent Your Perfect Car in <br> <img class="l" src="l3.png.png" alt="">Prishtina</h1>
       <p>Affordable prices, great service, and a wide selection of vehicles to fit your needs.</p>
       <button class="btn-primary" onclick="window.location.href='register.php'">Get Started</button>
     </div>

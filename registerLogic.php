@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     session_start();
     $_SESSION['user_email'] = $email;  // You can store more user info if needed
 
-    header("Location: user_dashboard.php");
+    header("Location: index.php");
     exit;
   } else {
     echo "Dështoi regjistrimi. Ju lutemi provoni përsëri.";
