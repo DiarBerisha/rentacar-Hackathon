@@ -218,7 +218,7 @@ footer {
             </tbody>
         </table>
     <?php else : ?>
-        <p style="text-align:center;">You have no bookings for this filter.</p>
+        <p style="text-align:center;">You have no bookings.</p>
     <?php endif; ?>
 
 </div>

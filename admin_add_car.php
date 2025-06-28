@@ -2,15 +2,19 @@
 session_start();
 include_once "config.php";
 
-
+// Check if admin is logged in
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header("Location: login.php");
     exit;
 }
 
 $message = '';
+$image_url = ''; // Initialize image URL variable
+
+// Handle form submission when the form is posted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
+    // Sanitize and validate form data
     $brand = trim($_POST['brand'] ?? '');
     $model = trim($_POST['model'] ?? '');
     $year = (int)($_POST['year'] ?? 0);
@@ -22,35 +26,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $air_conditioning = isset($_POST['air_conditioning']) ? 1 : 0;
     $description = trim($_POST['description'] ?? '');
     $price_per_day = floatval($_POST['price_per_day'] ?? 0);
-    $image_url = trim($_POST['image_url'] ?? '');
 
-    
+    // Check if required fields are filled in
     if (!$brand || !$model || !$year || !$price_per_day) {
         $message = "Please fill in all required fields.";
     } else {
-        try {
-            $sql = "INSERT INTO cars 
-                (brand, model, year, fuel_type, transmission, seats, doors, luggage, air_conditioning, description, price_per_day, image_url) 
-                VALUES 
-                (:brand, :model, :year, :fuel_type, :transmission, :seats, :doors, :luggage, :air_conditioning, :description, :price_per_day, :image_url)";
-            $stmt = $conn->prepare($sql);
-            $stmt->execute([
-                ':brand' => $brand,
-                ':model' => $model,
-                ':year' => $year,
-                ':fuel_type' => $fuel_type,
-                ':transmission' => $transmission,
-                ':seats' => $seats,
-                ':doors' => $doors,
-                ':luggage' => $luggage,
-                ':air_conditioning' => $air_conditioning,
-                ':description' => $description,
-                ':price_per_day' => $price_per_day,
-                ':image_url' => $image_url,
-            ]);
-            $message = "Car added successfully!";
-        } catch (PDOException $e) {
-            $message = "Error adding car: " . $e->getMessage();
+        // Handle file upload
+        if (isset($_FILES['image_url']) && $_FILES['image_url']['error'] == 0) {
+            $image_name = $_FILES['image_url']['name'];
+            $image_tmp = $_FILES['image_url']['tmp_name'];
+            $image_size = $_FILES['image_url']['size'];
+            $image_ext = pathinfo($image_name, PATHINFO_EXTENSION);
+            
+            // Validate file extension (JPG, JPEG, PNG, GIF)
+            $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
+            if (!in_array(strtolower($image_ext), $allowed_extensions)) {
+                $message = "Only JPG, JPEG, PNG, and GIF files are allowed.";
+            }
+            
+            // Validate file size (limit to 5MB)
+            if ($image_size > 5 * 1024 * 1024) {
+                $message = "File size exceeds 5MB.";
+            }
+            
+            // If no validation errors, move the file to the 'uploads' folder
+            if (empty($message)) {
+                // Generate a unique name for the image
+                $image_new_name = uniqid('car_', true) . '.' . $image_ext;
+                $upload_dir = 'uploads/';
+                
+                // Create 'uploads' folder if it doesn't exist
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0777, true);
+                }
+                
+                // Set the file path for storage
+                $image_path = $upload_dir . $image_new_name;
+                
+                // Move the uploaded file to the 'uploads' folder
+                if (move_uploaded_file($image_tmp, $image_path)) {
+                    $image_url = $image_path;  // Save the file path for database insertion
+                } else {
+                    $message = "Error uploading the image.";
+                }
+            }
+        } else {
+            $message = "Please select an image to upload.";
+        }
+
+        // If no errors, insert the data into the database
+        if (empty($message)) {
+            try {
+                $sql = "INSERT INTO cars 
+                        (brand, model, year, fuel_type, transmission, seats, doors, luggage, air_conditioning, description, price_per_day, image_url) 
+                        VALUES 
+                        (:brand, :model, :year, :fuel_type, :transmission, :seats, :doors, :luggage, :air_conditioning, :description, :price_per_day, :image_url)";
+                
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([
+                    ':brand' => $brand,
+                    ':model' => $model,
+                    ':year' => $year,
+                    ':fuel_type' => $fuel_type,
+                    ':transmission' => $transmission,
+                    ':seats' => $seats,
+                    ':doors' => $doors,
+                    ':luggage' => $luggage,
+                    ':air_conditioning' => $air_conditioning,
+                    ':description' => $description,
+                    ':price_per_day' => $price_per_day,
+                    ':image_url' => $image_url,  // Insert image URL
+                ]);
+                $message = "Car added successfully!";
+            } catch (PDOException $e) {
+                $message = "Error adding car: " . $e->getMessage();
+            }
         }
     }
 }
@@ -127,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p class="message <?= strpos($message, 'Error') === 0 ? 'error' : '' ?>"><?= htmlspecialchars($message) ?></p>
     <?php endif; ?>
 
-    <form method="POST" action="">
+    <form method="POST" action="" enctype="multipart/form-data">
         <label for="brand">Brand*</label>
         <input type="text" id="brand" name="brand" required>
 
@@ -162,8 +212,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label for="price_per_day">Price Per Day (€)*</label>
         <input type="number" step="0.01" id="price_per_day" name="price_per_day" min="0" required>
 
-        <label for="image_url">Image URL</label>
-        <input type="text" id="image_url" name="image_url" placeholder="Link to car image">
+        <label for="image_url">Upload Image</label>
+        <input type="file" id="image_url" name="image_url" accept="image/*" required>
 
         <button type="submit">Add Car</button>
     </form>
