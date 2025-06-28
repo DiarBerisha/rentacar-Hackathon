@@ -2,7 +2,7 @@
 session_start();
 include_once "config.php";
 
-// ✅ Redirect if not logged in
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pickup_date = $_POST['pickup_date'] ?? '';
     $return_date = $_POST['return_date'] ?? '';
 
-    // ✅ Simple date validation
+   
     if (empty($pickup_date) || empty($return_date) || $return_date < $pickup_date) {
         die("Invalid booking dates.");
     }

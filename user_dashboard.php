@@ -3,7 +3,6 @@ session_start();
 include_once "config.php";
 include_once "header.php";
 
-// Redirect if not logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
@@ -11,7 +10,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Handle booking cancellation
 if (isset($_GET['cancel_id'])) {
     $cancel_id = (int)$_GET['cancel_id'];
     try {
@@ -28,7 +26,6 @@ if (isset($_GET['cancel_id'])) {
     }
 }
 
-// Filter handling
 $filter = $_GET['filter'] ?? 'all';
 $whereClause = "WHERE b.customer_id = :user_id";
 
@@ -38,7 +35,6 @@ if ($filter == 'upcoming') {
     $whereClause .= " AND b.return_date < CURDATE()";
 }
 
-// Fetch bookings
 try {
     $sql = "
         SELECT b.id AS booking_id, b.pickup_date, b.return_date, b.status, c.brand, c.model, c.year
@@ -167,7 +163,6 @@ tr:hover {
     font-weight: bold;
 }
 
-/* Footer fix */
 footer {
     background-color: #222;
     color: #fff;

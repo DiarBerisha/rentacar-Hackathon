@@ -2,7 +2,8 @@
 include_once "config.php";
 include_once "header.php";
 
-// Get car ID from URL, sanitize it
+
+
 $car_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if ($car_id <= 0) {
@@ -10,7 +11,7 @@ if ($car_id <= 0) {
 }
 
 try {
-    // Prepare and execute query
+    
     $stmt = $conn->prepare("SELECT * FROM cars WHERE id = :id");
     $stmt->bindParam(':id', $car_id, PDO::PARAM_INT);
     $stmt->execute();

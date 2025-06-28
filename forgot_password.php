@@ -1,9 +1,8 @@
 <?php 
-include_once "header.php";  // Your existing header.php outputs doctype, head, body start, navbar etc.
+include_once "header.php";  
 ?>
 
 <style>
-  /* Just the content styles, no html/body styles */
   main {
     padding: 80px 30px 60px;
     min-height: calc(100vh - 140px);
@@ -75,7 +74,7 @@ include_once "header.php";  // Your existing header.php outputs doctype, head, b
       return;
     }
 
-    // Simulate sending email
+   
     msg.textContent = "If the email is registered, a reset link has been sent.";
     msg.style.color = 'green';
     emailInput.value = '';
@@ -83,5 +82,5 @@ include_once "header.php";  // Your existing header.php outputs doctype, head, b
 </script>
 
 <?php 
-include_once "footer.php"; // Your existing footer.php closes body and html tags
+include_once "footer.php"; 
 ?>

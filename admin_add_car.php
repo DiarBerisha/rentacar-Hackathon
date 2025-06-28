@@ -2,7 +2,7 @@
 session_start();
 include_once "config.php";
 
-// Check if admin is logged in
+
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header("Location: login.php");
     exit;
@@ -10,7 +10,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get form inputs and sanitize
+    
     $brand = trim($_POST['brand'] ?? '');
     $model = trim($_POST['model'] ?? '');
     $year = (int)($_POST['year'] ?? 0);
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $price_per_day = floatval($_POST['price_per_day'] ?? 0);
     $image_url = trim($_POST['image_url'] ?? '');
 
-    // Basic validation
+    
     if (!$brand || !$model || !$year || !$price_per_day) {
         $message = "Please fill in all required fields.";
     } else {

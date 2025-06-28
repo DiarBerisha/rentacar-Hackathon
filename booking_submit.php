@@ -2,7 +2,6 @@
 session_start();
 include_once "config.php";
 
-// Redirect to login if user not logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
@@ -10,7 +9,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Query bookings related to the current user
 $stmt = $conn->prepare("
     SELECT b.id, b.pickup_date, b.return_date, c.brand, c.model, c.year
     FROM bookings b

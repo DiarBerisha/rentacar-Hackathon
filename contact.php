@@ -1,7 +1,7 @@
 <?php include_once "header.php"; ?>
 
 <style>
-  /* Reset & base */
+ 
   * {
     box-sizing: border-box;
   }
@@ -14,7 +14,7 @@
     font-family: Arial, sans-serif;
   }
 
-  /* Header & Footer full width */
+  
   header, footer {
     width: 100%;
     background: #f7941d;
@@ -23,7 +23,7 @@
     text-align: center;
   }
 
-  /* Main content container centers content and fills available space */
+ 
   main {
     flex: 1 0 auto;
     display: flex;
@@ -33,7 +33,7 @@
     background-color: #f4f4f4;
   }
 
-  /* Inner content box */
+ 
   .content-wrapper {
     max-width: 600px;
     width: 100%;
@@ -43,7 +43,6 @@
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
   }
 
-  /* Contact form styling */
   form.contact-form {
     display: flex;
     flex-direction: column;

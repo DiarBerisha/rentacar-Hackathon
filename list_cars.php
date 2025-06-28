@@ -2,7 +2,7 @@
 include_once "config.php";
 include_once "header.php";
 
-// Fetch all cars
+
 try {
     $stmt = $conn->query("SELECT * FROM cars");
     $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);

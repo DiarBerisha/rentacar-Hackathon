@@ -2,13 +2,11 @@
 session_start();
 include_once "config.php";
 
-// ✅ Only admin allowed
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header("Location: login.php");
     exit;
 }
 
-// ✅ Handle Accept
 if (isset($_GET['accept_id'])) {
     $accept_id = (int)$_GET['accept_id'];
     try {
@@ -22,7 +20,6 @@ if (isset($_GET['accept_id'])) {
     }
 }
 
-// ✅ Handle Reject (Delete)
 if (isset($_GET['reject_id'])) {
     $reject_id = (int)$_GET['reject_id'];
     try {
@@ -36,7 +33,6 @@ if (isset($_GET['reject_id'])) {
     }
 }
 
-// ✅ Fetch all bookings
 try {
     $stmt = $conn->query("
         SELECT 
@@ -174,7 +170,6 @@ try {
 
     <a class="logout-btn" href="logout.php">Logout</a>
 
-    <!-- Add New Car Button -->
     <div style="text-align: center;">
       <a href="admin_add_car.php" class="add-car-btn">+ Add New Car</a>
     </div>

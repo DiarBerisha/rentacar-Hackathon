@@ -1,21 +1,18 @@
 <?php
 session_start();
 include_once "config.php";
-include_once "header.php"; // Make sure header.php wraps content in <header> tag!
+include_once "header.php"; 
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
 }
 
-// Get car ID from URL and validate
 $car_id = isset($_GET['car_id']) ? (int)$_GET['car_id'] : 0;
 if ($car_id <= 0) {
     die("Invalid car ID.");
 }
 
-// Fetch car details
 try {
     $stmt = $conn->prepare("SELECT brand, model, year, price_per_day FROM cars WHERE id = :id");
     $stmt->bindParam(':id', $car_id, PDO::PARAM_INT);
@@ -29,18 +26,16 @@ try {
     die("Database error: " . $e->getMessage());
 }
 
-// For date inputs
 $today = date('Y-m-d');
 ?>
 
 <style>
-  /* Fix header at top */
   header {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 60px; /* adjust if your header height differs */
+    height: 60px; 
     background-color: #f7941d;
     color: white;
     padding: 15px 30px;
@@ -49,24 +44,22 @@ $today = date('Y-m-d');
     z-index: 1000;
   }
 
-  /* Body padding so content starts below fixed header */
   body {
     margin: 0;
-    padding-top: 60px; /* same as header height */
+    padding-top: 60px; 
     font-family: Arial, sans-serif;
     background: #f4f4f4;
   }
 
-  /* Wrapper to center content below header */
   .page-wrapper {
-    min-height: calc(100vh - 60px); /* viewport minus header height */
+    min-height: calc(100vh - 60px); 
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px;
   }
 
-  /* Booking form container */
+ 
   .booking-container {
     width: 100%;
     max-width: 500px;

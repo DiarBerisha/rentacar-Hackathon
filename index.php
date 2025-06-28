@@ -1,6 +1,6 @@
 <?php
-include_once "config.php";   // Database config & connection
-include_once "header.php";   // Navbar and header HTML
+include_once "config.php";   
+include_once "header.php";   
 ?>
 
 <style>
