@@ -1,84 +1,64 @@
 <?php
 include_once "config.php";
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  // Get form inputs
-  $email = $_POST['email'];
-  $emri = $_POST['emri'];
-  $mbiemri = $_POST['mbiemri'];
-  $ditlindja = $_POST['birthday'];
-  $patentshoferi = $_POST['patentshoferi'];
-  $numritelefonit = $_POST['numri-telefonit'];
-  $kodipostar = $_POST['kodi-postar'];
-  $qyteti = $_POST['qyteti'];
-  $shteti = $_POST['shteti'];
-  $adresa = $_POST['adresa'];
-  $title = $_POST['title'];
-  $tempPass = $_POST['password'];
-  $tempConfirm = $_POST['confirm_password'];
-
-  // Check for empty fields
-  if (
-    empty($email) || empty($tempPass) || empty($tempConfirm) || empty($emri) ||
-    empty($mbiemri) || empty($ditlindja) || empty($patentshoferi) || empty($numritelefonit) ||
-    empty($kodipostar) || empty($qyteti) || empty($shteti) || empty($adresa) || empty($title)
-  ) {
-    echo "Ju lutemi plotësoni të gjitha fushat!";
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("Location: register.php");
     exit;
-  }
+}
 
-  // Check if passwords match
-  if ($tempPass !== $tempConfirm) {
-    echo "Fjalëkalimet nuk përputhen!";
+// Sanitize and fetch POST data
+$email = trim($_POST['email'] ?? '');
+$password = $_POST['password'] ?? '';
+$confirm_password = $_POST['confirm_password'] ?? '';
+$emri = trim($_POST['emri'] ?? '');
+$mbiemri = trim($_POST['mbiemri'] ?? '');
+$birthday = $_POST['birthday'] ?? '';
+$patentshoferi = trim($_POST['patentshoferi'] ?? '');
+$numri_telefonit = trim($_POST['numri_telefonit'] ?? '');
+$adresa = trim($_POST['adresa'] ?? '');
+$qyteti = trim($_POST['qyteti'] ?? '');
+$shteti = trim($_POST['shteti'] ?? '');
+
+// Basic validations
+if (empty($email) || empty($password) || empty($confirm_password) || empty($emri) || empty($mbiemri) || empty($birthday) || empty($patentshoferi) || empty($numri_telefonit) || empty($adresa) || empty($qyteti) || empty($shteti)) {
+    die("Ju lutem plotësoni të gjitha fushat.");
+}
+
+if ($password !== $confirm_password) {
+    die("Fjalëkalimet nuk përputhen.");
+}
+
+// Check if email already exists
+$stmt = $conn->prepare("SELECT id FROM users WHERE email = :email");
+$stmt->execute([':email' => $email]);
+if ($stmt->fetch()) {
+    die("Email-i është përdorur tashmë.");
+}
+
+// Hash the password
+$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+// Insert into database
+$sql = "INSERT INTO users (email, password, emri, mbiemri, ditlindja, patentshoferi, numritelefonit, adresa, qyteti, shteti) 
+        VALUES (:email, :password, :emri, :mbiemri, :ditlindja, :patentshoferi, :numritelefonit, :adresa, :qyteti, :shteti)";
+$stmt = $conn->prepare($sql);
+
+try {
+    $stmt->execute([
+        ':email' => $email,
+        ':password' => $hashed_password,
+        ':emri' => $emri,
+        ':mbiemri' => $mbiemri,
+        ':ditlindja' => $birthday,
+        ':patentshoferi' => $patentshoferi,
+        ':numritelefonit' => $numri_telefonit,
+        ':adresa' => $adresa,
+        ':qyteti' => $qyteti,
+        ':shteti' => $shteti,
+    ]);
+    // Redirect to login after successful registration
+    header("Location: login.php");
     exit;
-  }
-
-  // Hash password
-  $password = password_hash($tempPass, PASSWORD_DEFAULT);
-  $is_admin = 0;
-
-  // Check if email already exists
-  $checkSql = "SELECT id FROM users WHERE email = :email";
-  $checkStmt = $conn->prepare($checkSql);
-  $checkStmt->bindParam(':email', $email);
-  $checkStmt->execute();
-
-  if ($checkStmt->rowCount() > 0) {
-    echo "Ky email është përdorur tashmë!";
-    exit;
-  }
-
-  // Insert new user
-  $sql = "INSERT INTO users (
-                email, emri, mbiemri, ditlindja, patentshoferi, numritelefonit,
-                kodipostar, qyteti, shteti, adresa, title, password, is_admin
-            ) VALUES (
-                :email, :emri, :mbiemri, :ditlindja, :patentshoferi, :numritelefonit,
-                :kodipostar, :qyteti, :shteti, :adresa, :title, :password, :is_admin
-            )";
-
-  $stmt = $conn->prepare($sql);
-  $stmt->bindParam(':email', $email);
-  $stmt->bindParam(':emri', $emri);
-  $stmt->bindParam(':mbiemri', $mbiemri);
-  $stmt->bindParam(':ditlindja', $ditlindja);
-  $stmt->bindParam(':patentshoferi', $patentshoferi);
-  $stmt->bindParam(':numritelefonit', $numritelefonit);
-  $stmt->bindParam(':kodipostar', $kodipostar);
-  $stmt->bindParam(':qyteti', $qyteti);
-  $stmt->bindParam(':shteti', $shteti);
-  $stmt->bindParam(':adresa', $adresa);
-  $stmt->bindParam(':title', $title);
-  $stmt->bindParam(':password', $password);
-  $stmt->bindParam(':is_admin', $is_admin, PDO::PARAM_INT);
-
-  if ($stmt->execute()) {
-    session_start();
-    $_SESSION['user_email'] = $email;  // You can store more user info if needed
-
-    header("Location: index.php");
-    exit;
-  } else {
-    echo "Dështoi regjistrimi. Ju lutemi provoni përsëri.";
-  }
+} catch (PDOException $e) {
+    die("Gabim në regjistrim: " . $e->getMessage());
 }

@@ -1,123 +1,108 @@
 <?php
 session_start();
 include_once "config.php";
-include_once "header.php";
 
-function redirectWithMessage($msg)
-{
-    echo "<p style='color:#f7941d; font-weight:bold;'>$msg</p>";
-    echo "<p><a href='list_cars.php' style='color:#f7941d; text-decoration:none;'>Back to Cars</a></p>";
-    include_once "footer.php";
+// Redirect to login if user not logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
     exit;
 }
 
-// Check if user is logged in
-$user_id = $_SESSION['user_id'] ?? null;
-if (!$user_id) {
-    redirectWithMessage("Ju duhet të jeni të kyçur për të bërë rezervimin.");
-}
+$user_id = $_SESSION['user_id'];
 
-// Validate request method
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    redirectWithMessage("Metoda e kërkesës nuk është e vlefshme.");
-}
+// Query bookings related to the current user
+$stmt = $conn->prepare("
+    SELECT b.id, b.pickup_date, b.return_date, c.brand, c.model, c.year
+    FROM bookings b
+    JOIN cars c ON b.car_id = c.id
+    WHERE b.customer_id = :user_id
+    ORDER BY b.pickup_date DESC
+");
+$stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+$stmt->execute();
+$bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Retrieve and sanitize POST data
-$car_id = isset($_POST['car_id']) ? (int)$_POST['car_id'] : 0;
-$name = trim($_POST['name'] ?? '');
-$email = trim($_POST['email'] ?? '');
-$phone = trim($_POST['phone'] ?? '');
-$pickup_date = $_POST['pickup_date'] ?? '';
-$return_date = $_POST['return_date'] ?? '';
-
-// Validate required fields
-if (!$car_id || !$name || !$email || !$phone || !$pickup_date || !$return_date) {
-    redirectWithMessage("Ju lutemi plotësoni të gjitha fushat e kërkuara.");
-}
-
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    redirectWithMessage("Adresa e email-it nuk është e vlefshme.");
-}
-
-$today = date('Y-m-d');
-
-if ($pickup_date < $today) {
-    redirectWithMessage("Data e marrjes së makinës nuk mund të jetë në të kaluarën.");
-}
-
-if ($return_date < $pickup_date) {
-    redirectWithMessage("Data e kthimit nuk mund të jetë para datës së marrjes.");
-}
-
-try {
-    // Check if car exists
-    $stmt = $conn->prepare("SELECT brand, model FROM cars WHERE id = ?");
-    $stmt->execute([$car_id]);
-    $car = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$car) {
-        redirectWithMessage("Makina e zgjedhur nuk ekziston.");
-    }
-
-    // Insert booking with user_id
-    $insert = $conn->prepare("INSERT INTO bookings (user_id, car_id, name, email, phone, pickup_date, return_date) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $success = $insert->execute([$user_id, $car_id, $name, $email, $phone, $pickup_date, $return_date]);
-} catch (PDOException $e) {
-    redirectWithMessage("Gabim në bazën e të dhënave: " . $e->getMessage());
-}
+include_once "header.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
+<style>
+    body {
+        background: #111;
+        color: white;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    .dashboard-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+    h1 {
+        color: #f7941d;
+        text-align: center;
+        margin-bottom: 30px;
+        text-shadow: 0 0 5px rgba(0,0,0,0.7);
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #222;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    th, td {
+        padding: 12px 15px;
+        border: 1px solid #444;
+        text-align: left;
+    }
+    th {
+        background: #f7941d;
+        color: #111;
+        font-weight: 700;
+    }
+    tr:nth-child(even) {
+        background: #333;
+    }
+    tr:hover {
+        background: #444;
+    }
+    p.no-bookings {
+        text-align: center;
+        font-size: 18px;
+        margin-top: 50px;
+        color: #ccc;
+    }
+</style>
 
-<head>
-    <meta charset="UTF-8" />
-    <title>Konfirmimi i Rezervimit</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #111;
-            color: white;
-            max-width: 700px;
-            margin: 40px auto;
-            padding: 20px;
-        }
+<div class="dashboard-container">
+    <h1>My Bookings</h1>
 
-        h2 {
-            color: #f7941d;
-            margin-bottom: 20px;
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
-        }
-
-        p {
-            font-size: 18px;
-            line-height: 1.5;
-        }
-
-        a {
-            color: #f7941d;
-            text-decoration: none;
-            font-weight: 700;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-
-<body>
-    <?php if ($success) : ?>
-        <h2>Rezervimi u krye me sukses!</h2>
-        <p>Faleminderit, <?= htmlspecialchars($name) ?>.</p>
-        <p>Rezervimi juaj për makinën <strong><?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></strong> (ID: <?= $car_id ?>)
-            nga data <strong><?= htmlspecialchars($pickup_date) ?></strong> deri më <strong><?= htmlspecialchars($return_date) ?></strong> është pranuar.</p>
-        <p><a href="list_cars.php">Kthehu te makinat</a></p>
+    <?php if ($bookings) : ?>
+        <table>
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Car</th>
+                    <th>Pickup Date</th>
+                    <th>Return Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($bookings as $booking) : ?>
+                    <tr>
+                        <td><?= htmlspecialchars($booking['id']) ?></td>
+                        <td><?= htmlspecialchars($booking['brand'] . ' ' . $booking['model'] . ' (' . $booking['year'] . ')') ?></td>
+                        <td><?= htmlspecialchars($booking['pickup_date']) ?></td>
+                        <td><?= htmlspecialchars($booking['return_date']) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     <?php else : ?>
-        <?php redirectWithMessage("Gabim gjatë ruajtjes së rezervimit. Ju lutemi provoni përsëri."); ?>
+        <p class="no-bookings">You have no bookings yet.</p>
     <?php endif; ?>
-</body>
-
-</html>
+</div>
 
 <?php include_once "footer.php"; ?>

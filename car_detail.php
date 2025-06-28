@@ -2,131 +2,138 @@
 include_once "config.php";
 include_once "header.php";
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+// Get car ID from URL, sanitize it
+$car_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+if ($car_id <= 0) {
     die("Invalid car ID.");
 }
 
-$car_id = (int)$_GET['id'];
-
-// Fetch car details with PDO
 try {
-    $stmt = $conn->prepare("SELECT * FROM cars WHERE id = ?");
-    $stmt->execute([$car_id]);
+    // Prepare and execute query
+    $stmt = $conn->prepare("SELECT * FROM cars WHERE id = :id");
+    $stmt->bindParam(':id', $car_id, PDO::PARAM_INT);
+    $stmt->execute();
+
     $car = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$car) {
         die("Car not found.");
     }
 } catch (PDOException $e) {
-    die("Error fetching car: " . $e->getMessage());
+    die("Database error: " . $e->getMessage());
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
+<style>
+  .container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+    font-family: Arial, sans-serif;
+  }
 
-<head>
-    <meta charset="UTF-8" />
-    <title>Book <?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></title>
-    <style>
-        .main {
-            font-family: Arial, sans-serif;
-            background: #111;
-            color: white;
-            padding: 20px;
-            max-width: 700px;
-            margin: 40px auto;
-        }
+  .car-detail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    padding: 30px;
+  }
 
-        h1 {
-            color: #f7941d;
-            margin-bottom: 15px;
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
-        }
+  .car-image {
+    flex: 1 1 400px;
+    max-width: 400px;
+  }
 
-        .car-image {
-            width: 100%;
-            max-height: 300px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            box-shadow: 0 0 10px rgba(247, 148, 29, 0.6);
-        }
+  .car-image img {
+    width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+  }
 
-        .details p {
-            margin: 8px 0;
-            font-size: 16px;
-        }
+  .car-info {
+    flex: 1 1 400px;
+    display: flex;
+    flex-direction: column;
+  }
 
-        form {
-            margin-top: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+  .car-info h1 {
+    margin: 0 0 20px;
+    color: #f7941d;
+  }
 
-        input,
-        button {
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #f7941d;
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
-            width: 100%;
-            box-sizing: border-box;
-        }
+  .car-info p {
+    margin: 10px 0;
+    color: #555;
+    font-size: 16px;
+  }
 
-        button {
-            background: #f7941d;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
+  .car-info .specs p {
+    margin: 6px 0;
+  }
 
-        button:hover {
-            background: #e88312;
-        }
-    </style>
-</head>
+  .price {
+    font-size: 24px;
+    font-weight: 700;
+    color: #f7941d;
+    margin: 25px 0;
+  }
 
-<body>
-        <section class="main">
-    <img class="car-image" src="<?= htmlspecialchars($car['image_url']) ?>" alt="<?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?>">
+  .btn-book {
+    background-color: #f7941d;
+    border: none;
+    padding: 15px 25px;
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    max-width: 200px;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+  }
 
-    <h1>Book <?= htmlspecialchars($car['brand']) . ' ' . htmlspecialchars($car['model']) ?> (<?= (int)$car['year'] ?>)</h1>
+  .btn-book:hover {
+    background-color: #e88312;
+  }
 
-    <p><strong>Fuel:</strong> <?= htmlspecialchars($car['fuel_type']) ?></p>
-    <p><strong>Transmission:</strong> <?= htmlspecialchars($car['transmission']) ?></p>
-    <p><strong>Seats:</strong> <?= (int)$car['seats'] ?></p>
-    <p><strong>Doors:</strong> <?= (int)$car['doors'] ?></p>
-    <p><strong>Luggage:</strong> <?= (int)$car['luggage'] ?></p>
-    <p><strong>Air Conditioning:</strong> <?= $car['air_conditioning'] ? 'Yes' : 'No' ?></p>
-    <p><?= nl2br(htmlspecialchars($car['description'])) ?></p>
-    <p><strong>Price per day:</strong> €<?= number_format($car['price_per_day'], 2) ?></p>
+  @media (max-width: 768px) {
+    .car-detail {
+      flex-direction: column;
+      align-items: center;
+    }
+    .car-image, .car-info {
+      max-width: 100%;
+      flex: none;
+    }
+  }
+</style>
 
-    <form action="booking_submit.php" method="POST">
-        <input type="hidden" name="car_id" value="<?= $car['id'] ?>">
+<div class="container">
+  <div class="car-detail">
+    <div class="car-image">
+      <img src="<?= htmlspecialchars($car['image_url']); ?>" alt="<?= htmlspecialchars($car['brand'] . ' ' . $car['model']); ?>">
+    </div>
 
-        <label for="name">Full Name*</label>
-        <input type="text" name="name" id="name" required placeholder="Your full name">
+    <div class="car-info">
+      <h1><?= htmlspecialchars($car['brand']) . ' ' . htmlspecialchars($car['model']) . ' (' . (int)$car['year'] . ')'; ?></h1>
+      <div class="specs">
+        <p><strong>Fuel Type:</strong> <?= htmlspecialchars($car['fuel_type']); ?></p>
+        <p><strong>Transmission:</strong> <?= htmlspecialchars($car['transmission']); ?></p>
+        <p><strong>Seats:</strong> <?= (int)$car['seats']; ?></p>
+        <p><strong>Doors:</strong> <?= (int)$car['doors']; ?></p>
+        <p><strong>Luggage Capacity:</strong> <?= (int)$car['luggage']; ?></p>
+        <p><strong>Air Conditioning:</strong> <?= $car['air_conditioning'] ? 'Yes' : 'No'; ?></p>
+      </div>
+      <p><?= nl2br(htmlspecialchars($car['description'])); ?></p>
+      <div class="price">€<?= number_format($car['price_per_day'], 2); ?> / day</div>
+      <a href="booking.php?car_id=<?= (int)$car['id']; ?>" class="btn-book">Book Now</a>
+    </div>
+  </div>
+</div>
 
-        <label for="email">Email*</label>
-        <input type="email" name="email" id="email" required placeholder="you@example.com">
-
-        <label for="phone">Phone Number*</label>
-        <input type="tel" name="phone" id="phone" required placeholder="+383 4X XXX XXX">
-
-        <label for="pickup_date">Pickup Date*</label>
-        <input type="date" name="pickup_date" id="pickup_date" required min="<?= date('Y-m-d') ?>">
-
-        <label for="return_date">Return Date*</label>
-        <input type="date" name="return_date" id="return_date" required min="<?= date('Y-m-d') ?>">
-
-        <button type="submit">Book Now</button>
-    </form>
-</section>
-</body>
-
-</html>
+<?php include_once "footer.php"; ?>

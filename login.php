@@ -1,18 +1,5 @@
-<?php include_once "config.php";
-include_once "header.php"; ?>
-
-<body>
-  <form action="loginLogic.php" class="login" method="POST">
-    <h2>Kyçu</h2>
-    <p>Nese nuk kini nje llogari ne <a href="index.php">Rent A Car Diari</a> <a href="register.php" class="reg">regjistrohuni </a>tani!</p>
-    <input type="email" name="email" class="email-l" placeholder="Email" required>
-    <input type="password" name="password" class="password-l" placeholder="Fjalkalimi" required>
-    <p><a href="forgot-password.html">Kam harruar fjalkalimin!</a></p>
-    <button type="submit" class="button-l">Kyçu</button>
-  </form>
-</body>
-<?php include_once "config.php";
-include_once "header.php"; ?>
+<?php include_once "config.php"; ?>
+<?php include_once "header.php"; ?>
 
 <style>
   body {
@@ -20,6 +7,7 @@ include_once "header.php"; ?>
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
+    
   }
 
   form.login {
@@ -55,7 +43,6 @@ include_once "header.php"; ?>
     margin-left: 4px;
   }
 
-
   form.login p a:hover {
     text-decoration: underline;
   }
@@ -77,7 +64,7 @@ include_once "header.php"; ?>
     outline: none;
   }
 
-  form.login .button-l {
+  form.login button {
     background-color: #f7941d;
     border: none;
     padding: 14px 0;
@@ -90,33 +77,20 @@ include_once "header.php"; ?>
     width: 100%;
   }
 
-  form.login .button-l:hover {
+  form.login button:hover {
     background-color: #e88312;
   }
-
-  form.login p.forgot-password {
-    margin-top: 10px;
-    text-align: center;
-  }
-
-  form.login p.forgot-password a {
-    font-size: 14px;
-    color: #f7941d;
-    font-weight: 600;
-  }
-
-  form.login p.forgot-password a:hover {
-    text-decoration: underline;
-  }
-
-  @media (max-width: 480px) {
-    form.login {
-      margin: 30px 20px 60px;
-      padding: 25px 20px;
-    }
-
-    form.login h2 {
-      font-size: 24px;
-    }
-  }
 </style>
+
+<body>
+  <form class="login" method="POST" action="loginLogic.php">
+    <h2>Kyçu</h2>
+    <p>Nëse nuk keni një llogari në <a href="index.php">Rent A Car Diari</a>, <a href="register.php">regjistrohuni</a> tani!</p>
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="password" name="password" placeholder="Fjalëkalimi" required />
+    <p><a href="forgot_password.php">Kam harruar fjalëkalimin!</a></p>
+    <button type="submit">Kyçu</button>
+  </form>
+</body>
+
+<?php include_once "footer.php"; ?>

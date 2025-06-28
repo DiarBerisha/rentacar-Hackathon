@@ -33,8 +33,9 @@ try {
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['email'] = $user['email'];
 
-    // Check if user is admin (replace with DB field if possible)
+    // List of admin emails - add your admin emails here:
     $adminEmails = ['admin@yourdomain.com', 'boss@yourdomain.com'];
+
     if (in_array(strtolower($user['email']), $adminEmails)) {
         $_SESSION['admin_logged_in'] = true;
         header("Location: admin_bookings.php");

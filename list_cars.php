@@ -7,113 +7,103 @@ try {
     $stmt = $conn->query("SELECT * FROM cars");
     $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    die("Gabim gjatë marrjes së të dhënave të makinave: " . $e->getMessage());
+    die("Error fetching cars: " . $e->getMessage());
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
+<style>
+  body {
+    background: #f4f4f4;
+    font-family: Arial, sans-serif;
+  }
 
-<head>
-    <meta charset="UTF-8" />
-    <title>All Cars</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            padding: 30px;
-        }
+  .container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
 
-        .car-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
+  h1 {
+    text-align: center;
+    color: #f7941d;
+    margin-bottom: 30px;
+  }
 
-        a.car-link {
-            text-decoration: none;
-            color: inherit;
-            width: 300px;
-        }
+  .car-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
 
-        .car-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: transform 0.3s;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
+  .car-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 280px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+  }
 
-        .car-card:hover {
-            transform: scale(1.05);
-        }
+  .car-card:hover {
+    transform: scale(1.05);
+  }
 
-        .car-card img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
+  .car-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
 
-        .car-card .content {
-            padding: 15px;
-            flex-grow: 1;
-        }
+  .car-content {
+    padding: 15px;
+    flex-grow: 1;
+  }
 
-        .car-card h3 {
-            margin: 0 0 10px 0;
-            color: #333;
-        }
+  .car-content h3 {
+    margin: 0 0 10px;
+    font-size: 1.2rem;
+    color: #333;
+  }
 
-        .car-card p {
-            margin: 5px 0;
-            font-size: 14px;
-            color: #555;
-        }
+  .car-content p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #555;
+  }
 
-        .price {
-            font-weight: bold;
-            color: #f7941d;
-            margin-top: 10px;
-            font-size: 16px;
-        }
-    </style>
-</head>
+  .price {
+    font-weight: 700;
+    color: #f7941d;
+    margin-top: 10px;
+    font-size: 16px;
+  }
+</style>
 
-<body>
-
-    <h1 style="text-align:center;">Available Cars</h1>
-
-    <div class="car-container">
-        <?php if (!empty($cars)) : ?>
-            <?php foreach ($cars as $car) : ?>
-                <a class="car-link" href="car_detail.php?id=<?= (int)$car['id']; ?>">
-                    <div class="car-card">
-                        <img src="<?= htmlspecialchars($car['image_url']); ?>" alt="<?= htmlspecialchars($car['brand'] . ' ' . $car['model']); ?>">
-                        <div class="content">
-                            <h3><?= htmlspecialchars($car['brand']) . ' ' . htmlspecialchars($car['model']) . ' (' . (int)$car['year'] . ')' ?></h3>
-                            <p><strong>Fuel:</strong> <?= htmlspecialchars($car['fuel_type']); ?></p>
-                            <p><strong>Transmission:</strong> <?= htmlspecialchars($car['transmission']); ?></p>
-                            <p><strong>Seats:</strong> <?= (int)$car['seats']; ?></p>
-                            <p><strong>Doors:</strong> <?= (int)$car['doors']; ?></p>
-                            <p><strong>Luggage:</strong> <?= (int)$car['luggage']; ?></p>
-                            <p><strong>Air Conditioning:</strong> <?= $car['air_conditioning'] ? 'Yes' : 'No'; ?></p>
-                            <p><?= nl2br(htmlspecialchars($car['description'])); ?></p>
-                            <span class="price">€<?= number_format($car['price_per_day'], 2); ?> / day</span>
-                        </div>
-                    </div>
-                </a>
-            <?php endforeach; ?>
-        <?php else : ?>
-            <p>No cars found.</p>
-        <?php endif; ?>
-    </div>
-
-</body>
-
-</html>
+<div class="container">
+  <h1>Available Cars</h1>
+  <div class="car-grid">
+    <?php if (!empty($cars)) : ?>
+      <?php foreach ($cars as $car) : ?>
+        <a href="car_detail.php?id=<?= (int)$car['id']; ?>" class="car-card" aria-label="<?= htmlspecialchars($car['brand'] . ' ' . $car['model']); ?>">
+          <img src="<?= htmlspecialchars($car['image_url']); ?>" alt="<?= htmlspecialchars($car['brand'] . ' ' . $car['model']); ?>">
+          <div class="car-content">
+            <h3><?= htmlspecialchars($car['brand']) . ' ' . htmlspecialchars($car['model']) . ' (' . (int)$car['year'] . ')'; ?></h3>
+            <p><strong>Fuel:</strong> <?= htmlspecialchars($car['fuel_type']); ?></p>
+            <p><strong>Transmission:</strong> <?= htmlspecialchars($car['transmission']); ?></p>
+            <p class="price">€<?= number_format($car['price_per_day'], 2); ?> / day</p>
+          </div>
+        </a>
+      <?php endforeach; ?>
+    <?php else : ?>
+      <p>No cars available at the moment.</p>
+    <?php endif; ?>
+  </div>
+</div>
 
 <?php include_once "footer.php"; ?>

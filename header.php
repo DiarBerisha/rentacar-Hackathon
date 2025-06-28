@@ -62,8 +62,10 @@
     <ul class="nav-links">
       <li><a href="index.php">RENT A CAR</a></li>
       <li><a href="contact.php">CONTACT</a></li>
+      
       <li><a href="register.php">REGISTER</a></li>
       <li><a href="login.php">LOG IN</a></li>
+      
     </ul>
   </nav>
 </body>
